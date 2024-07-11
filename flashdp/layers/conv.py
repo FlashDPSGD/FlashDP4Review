@@ -47,6 +47,12 @@ def ApplyDPConv1DFunc(C, clamp_value):
 
             if ctx.needs_input_grad[0]:
                 grad_bias = _bias_grad_clip(grad_output, C, clamp_value)
+                grad_bias.add_(torch.normal(
+                    mean=0,
+                    std=1.0,
+                    size=grad_bias.shape,
+                    device=grad_bias.device,
+                ))
             else:
                 grad_bias = None
 
@@ -58,6 +64,12 @@ def ApplyDPConv1DFunc(C, clamp_value):
             if ctx.needs_input_grad[2]:
                 if FlashDPAvailable:
                     grad_weight = _weight_flashdp(input, grad_output, C, clamp_value)
+                grad_weight.add_(torch.normal(
+                    mean=0,
+                    std=1.0,
+                    size=grad_weight.shape,
+                    device=grad_weight.device,
+                ))
             else:
                 grad_weight = None
 
